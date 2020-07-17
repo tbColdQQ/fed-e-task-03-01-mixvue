@@ -4,7 +4,7 @@
  * @Author: jie.niu
  * @Date: 2020-07-16 11:39:55
  * @LastEditors: jie.niu
- * @LastEditTime: 2020-07-16 16:23:47
+ * @LastEditTime: 2020-07-17 18:19:11
 --> 
 <!DOCTYPE html>
 <html lang="en">
@@ -20,6 +20,10 @@
         <h3>{{count}}</h3>
         <h1>v-text</h1>
         <div v-text="msg"></div>
+        <h1>v-html</h1>
+        <div v-html="htmlVal"></div>
+        <h1>v-on</h1>
+        <div v-on:click="clickHandle">click me</div>
         <h1>v-model</h1>
         <input type="text" v-model="msg">
         <input type="text" v-model="count">
@@ -35,8 +39,14 @@
             data: {
                 msg: 'hello vue',
                 count: 100,
+                htmlVal: '<p>aaaaaa</p>',
                 person: {
                     name: 'tbcold'
+                }
+            },
+            methods: {
+                clickHandle() {
+                    alert('click me')
                 }
             }
         })

@@ -4,7 +4,7 @@
  * @Author: jie.niu
  * @Date: 2020-07-16 14:40:42
  * @LastEditors: jie.niu
- * @LastEditTime: 2020-07-16 16:35:08
+ * @LastEditTime: 2020-07-17 18:23:12
  */ 
 class Compiler {
     constructor(vm) {
@@ -39,13 +39,19 @@ class Compiler {
                 attrName = attrName.substr(2)
                 let key = attr.value
                 this.update(node, key, attrName)
+                
             }
         })
     }
 
     update(node, key, attrName) {
-        let updateFn = this[attrName + 'Updater']
-        updateFn && updateFn.call(this, node, this.vm[key], key)
+        if(attrName.startsWith('on')) {
+            let updateFn = this['onUpdater']
+            updateFn && updateFn.call(this, node, key, attrName)
+        }else {
+            let updateFn = this[attrName + 'Updater']
+            updateFn && updateFn.call(this, node, this.vm[key], key)
+        }
     }
 
     // 处理v-text
@@ -65,6 +71,27 @@ class Compiler {
         // 双向绑定
         node.addEventListener('input', () => {
             this.vm[key] = node.value
+        })
+    }
+
+    // 处理v-html
+    htmlUpdater(node, value, key) {
+        node.innerHTML = value
+        new Watcher(this.vm, key, (newValue) => {
+            node.innerHTML = newValue
+        })
+    }
+
+    // 处理v-on
+    onUpdater(node, value, key) {
+        key = key.replace(":", "")
+        node.addEventListener(key.substr(2), (e) => {
+            this.vm.$options.methods[value](e)
+        })
+        new Watcher(this.vm, key, (newValue) => {
+            node.addEventListener(key.substr(2), (e) => {
+                this.vm.options.methods[newValue](e)
+            })
         })
     }
 
